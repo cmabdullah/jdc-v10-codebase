@@ -1,0 +1,116 @@
+plugins {
+    id 'application'
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.micronaut.application") version "4.4.2"
+    id("io.micronaut.aot") version "4.4.2"
+}
+
+version = "0.1"
+group = "org.cm"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //tag::micronaut-graal[]
+    annotationProcessor "io.micronaut:micronaut-graal"
+    //end::micronaut-graal[]
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+//    implementation("org.apache.xmlbeans:xmlbeans:3.1.0")
+    //tag::spreadsheetbuilder[]
+    implementation "builders.dsl:spreadsheet-builder-poi:2.2.1"
+    //end::spreadsheetbuilder[]
+    compileOnly("io.micronaut:micronaut-http-client")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    compileOnly "org.graalvm.nativeimage:svm"
+    testImplementation("io.micronaut:micronaut-http-client")
+}
+
+
+application {
+    mainClass = "org.cm.Application"
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("21")
+    targetCompatibility = JavaVersion.toVersion("21")
+}
+
+
+graalvmNative.toolchainDetection = false
+
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("org.cm.*")
+    }
+    aot {
+        // Please review carefully the optimizations enabled below
+        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+        replaceLogbackXml = true
+    }
+}
+
+
+tasks.named("dockerfileNative") {
+    jdkVersion = "21"
+}
+
+tasks.withType(JavaCompile){
+    options.encoding = "UTF-8"
+    options.compilerArgs.add('-parameters')
+}
+
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.cm.Application'
+    }
+}
+
+shadowJar {
+    archiveClassifier.set("") // Create a JAR without a classifier
+}
+
+task cleanShadowJar {
+    dependsOn clean, shadowJar
+}
+
+def jarFileName = 'micronautreflectionpoc-0.1.jar'
+
+task runCustom {
+    dependsOn cleanShadowJar
+    doLast {
+        exec {
+            commandLine 'jar', 'xf', "build/libs/${jarFileName}", 'META-INF/MANIFEST.MF'
+        }
+        exec {
+            commandLine 'cat', 'META-INF/MANIFEST.MF'
+        }
+        exec {
+            commandLine 'java', '-jar', '-agentlib:native-image-agent=config-output-dir=config-files,config-write-period-secs=1,config-write-initial-delay-secs=1', 'build/libs/micronautreflectionpoc-0.1.jar'
+        }
+    }
+}
+
+graalvmNative {
+    binaries {
+        all {
+            javaLauncher.set(javaToolchains.launcherFor {
+                languageVersion.set(JavaLanguageVersion.of(21))
+                vendor.set(JvmVendorSpec.GRAAL_VM)
+            })
+        }
+    }
+}

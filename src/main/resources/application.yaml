@@ -1,0 +1,6 @@
+#Mon Oct 21 07:12:11 UTC 2024
+micronaut:
+  application:
+    name: micronautreflectionpoc
+  server:
+    default-charset: UTF-8
