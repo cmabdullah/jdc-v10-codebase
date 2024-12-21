@@ -1,5 +1,13 @@
 [
   {
+    "name":"org.cm.transformer.StringCapitalizer",
+    "methods":[{"name":"capitalize","parameterTypes":["java.lang.String"] }]
+  },
+  {
+    "name":"org.cm.transformer.StringReverser",
+    "methods":[{"name":"reverse","parameterTypes":["java.lang.String"] }]
+  },
+  {
     "name":"org.apache.poi.xssf.model.SharedStringsTable",
     "methods":[{"name":"<init>","parameterTypes":[] }]
   },
