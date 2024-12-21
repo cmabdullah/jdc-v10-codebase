@@ -76,6 +76,7 @@ public class StringReverser {
 
 >  ./gradlew runCustom
 
+[Slide](https://www.slideshare.net/slideshow/the-framework-redefining-java-for-microservices-and-beyond/274283662)
 [micronaut graalvm reflection gradle java](https://guides.micronaut.io/latest/micronaut-graalvm-reflection-gradle-java.html)
 
 [tracing agent](https://www.graalvm.org/latest/reference-manual/native-image/metadata/AutomaticMetadataCollection/#tracing-agent)
