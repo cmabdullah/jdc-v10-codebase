@@ -1,3 +1,5 @@
+curl "localhost:8080/transformer/capitalize?q=Hello"
+
 > java -jar -agentlib:native-image-agent=config-output-dir=config-files,config-write-period-secs=1,config-write-initial-delay-secs=1 build/libs/mmicronautreflection-0.1.jar
 
 > ./gradlew clean assemble
@@ -13,3 +15,4 @@
 
 [micronaut graalvm reflection gradle java](https://guides.micronaut.io/latest/micronaut-graalvm-reflection-gradle-java.html)
 [tracing agent](https://www.graalvm.org/latest/reference-manual/native-image/metadata/AutomaticMetadataCollection/#tracing-agent)
+[micronaut graalvm reflection gradle java](https://guides.micronaut.io/latest/micronaut-graalvm-reflection-gradle-java.html)
